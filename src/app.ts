@@ -15,7 +15,7 @@ import {
   enrollmentsRouter,
   ticketsRouter,
   paymentsRouter,
-  hotelsRouter
+  hotelsRouter,
 } from '@/routers';
 
 const app = express();

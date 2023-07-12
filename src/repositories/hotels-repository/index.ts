@@ -1,11 +1,11 @@
-import { prisma } from "@/config";
-import { Hotel } from "@prisma/client";
+import { Hotel } from '@prisma/client';
+import { prisma } from '@/config';
 
 async function getAllHotelsPrisma(): Promise<Hotel[] | null> {
-    return prisma.hotel.findMany();
+  return prisma.hotel.findMany();
 }
 const hotelsRepository = {
-    getAllHotelsPrisma
-}
+  getAllHotelsPrisma,
+};
 
 export default hotelsRepository;
