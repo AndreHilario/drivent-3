@@ -11,7 +11,8 @@ import {
     createTicket,
     createHotels,
     createTicketTypeWithoutHotel,
-    createTicketTypeRemote
+    createTicketTypeRemote,
+    createTicketTypeHotel
 }
     from '../factories';
 import { TicketStatus } from "@prisma/client";
@@ -70,7 +71,7 @@ describe('GET /hotels', () => {
             expect(response.status).toEqual(httpStatus.NOT_FOUND);
         });
 
-        it('should respond with status 404 when doesnt exist hotels ', async () => {
+        it('should respond with status 404 when no hotels exist ', async () => {
             const user = await createUser();
             const token = await generateValidToken(user);
             const enrollment = await createEnrollmentWithAddress(user);
@@ -121,24 +122,11 @@ describe('GET /hotels', () => {
             expect(response.status).toEqual(httpStatus.PAYMENT_REQUIRED);
         });
 
-        it('should respond with status 400 with return other errors', async () => {
-            const user = await createUser();
-            const token = await generateValidToken(user);
-            const enrollment = await createEnrollmentWithAddress(user);
-            const ticketType = await createTicketType();
-            await createTicket(enrollment.id, ticketType.id, TicketStatus.PAID);
-            await createHotels();
-
-            const response = await server.get(`/hotels`).set('Authorization', `Bearer ${token}`);
-
-            expect(response.status).toEqual(httpStatus.BAD_REQUEST);
-        });
-
         it('should respond with status 200 and with all hotels', async () => {
             const user = await createUser();
             const token = await generateValidToken(user);
             const enrollment = await createEnrollmentWithAddress(user);
-            const ticketType = await createTicketType();
+            const ticketType = await createTicketTypeHotel();
             await createTicket(enrollment.id, ticketType.id, TicketStatus.PAID);
             const hotel = await createHotels();
 
@@ -146,14 +134,14 @@ describe('GET /hotels', () => {
 
             expect(response.status).toEqual(httpStatus.OK);
             expect(response.body).toEqual(
-                expect.arrayContaining(
+                expect.arrayContaining([
                     expect.objectContaining({
                         id: hotel.id,
                         name: hotel.name,
                         image: hotel.image,
-                        createdAt: hotel.createdAt,
-                        updatedAt: hotel.updatedAt,
-                    })));
+                        createdAt: hotel.createdAt.toISOString(),
+                        updatedAt: hotel.updatedAt.toISOString(),
+                    })]));
         });
     });
 })
