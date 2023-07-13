@@ -172,13 +172,15 @@ describe('GET /hotels/:hotelId', () => {
 
     describe('when token is valid', () => {
         it('should respond with status 400 if hotelId parameter is not provided', async () => {
-            const response = await server.get('/hotels');
+            const token = await generateValidToken();
+            const response = await server.get('/hotels').set('Authorization', `Bearer ${token}`);
 
             expect(response.status).toBe(httpStatus.BAD_REQUEST);
         });
 
         it('should respond with status 400 if hotelId parameter is different from number', async () => {
-            const response = await server.get('/hotels/isString');
+            const token = await generateValidToken();
+            const response = await server.get('/hotels/isString').set('Authorization', `Bearer ${token}`);
 
             expect(response.status).toBe(httpStatus.BAD_REQUEST);
         });
@@ -275,16 +277,15 @@ describe('GET /hotels/:hotelId', () => {
                         image: hotel.image,
                         createdAt: hotel.createdAt.toISOString(),
                         updatedAt: hotel.updatedAt.toISOString(),
-                        Rooms: [{
+                        Rooms: hotel.Rooms.length > 0 ? [{
                             id: hotel.Rooms[0].id,
                             name: hotel.Rooms[0].name,
                             capacity: hotel.Rooms[0].capacity,
                             hotelId: hotel.id,
                             createdAt: hotel.Rooms[0].createdAt.toISOString(),
                             updatedAt: hotel.Rooms[0].updatedAt.toISOString()
-                        }]
-                    }),
-
+                        }] : []
+                    })
                 );
             });
         });
