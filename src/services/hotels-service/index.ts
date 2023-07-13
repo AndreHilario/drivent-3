@@ -10,9 +10,6 @@ async function getHotels(userId: number) {
     const enrollment = await enrollmentRepository.findWithAddressByUserId(userId);
     if (!enrollment) throw notFoundError();
 
-    const result = await hotelsRepository.getAllHotelsPrisma();
-    if (!result || result.length === 0 || result === null) throw notFoundError();
-
     const ticket = await ticketsRepository.findTicketByEnrollmentId(enrollment.id);
     if (!ticket) {
         throw notFoundError();
@@ -25,6 +22,9 @@ async function getHotels(userId: number) {
     ) {
         throw paymentRequired();
     }
+
+    const result = await hotelsRepository.getAllHotelsPrisma();
+    if (!result || result.length === 0 || result === null) throw notFoundError();
 
     return result;
 }
