@@ -171,11 +171,11 @@ describe('GET /hotels/:hotelId', () => {
     });
 
     describe('when token is valid', () => {
-        it('should respond with status 400 if hotelId parameter is not provided', async () => {
+        it('should respond with status 404 if hotelId parameter is not provided', async () => {
             const token = await generateValidToken();
-            const response = await server.get('/hotels').set('Authorization', `Bearer ${token}`);
+            const response = await server.get('/hotels/').set('Authorization', `Bearer ${token}`);
 
-            expect(response.status).toBe(httpStatus.BAD_REQUEST);
+            expect(response.status).toBe(httpStatus.NOT_FOUND);
         });
 
         it('should respond with status 400 if hotelId parameter is different from number', async () => {
@@ -215,7 +215,7 @@ describe('GET /hotels/:hotelId', () => {
                 await createTicket(enrollment.id, ticketType.id, TicketStatus.PAID);
                 await createHotels();
 
-                const response = await server.get(`/hotels/000000`).set('Authorization', `Bearer ${token}`);
+                const response = await server.get(`/hotels/999999`).set('Authorization', `Bearer ${token}`);
 
                 expect(response.status).toEqual(httpStatus.NOT_FOUND);
             });

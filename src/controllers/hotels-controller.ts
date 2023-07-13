@@ -29,7 +29,7 @@ export async function getHotelById(req: AuthenticatedRequest, res: Response) {
         const hotel = await hotelsService.getHotelByIdWihtRooms(userId, hotelId);
         return res.status(httpStatus.OK).send(hotel);
     } catch (e) {
-        if (e.name === "RequestError") {
+        if (e.name === 'RequestError') {
             return res.sendStatus(httpStatus.BAD_REQUEST);
         }
         if (e.name === 'UnauthorizedError') {
