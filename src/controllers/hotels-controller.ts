@@ -29,6 +29,9 @@ export async function getHotelById(req: AuthenticatedRequest, res: Response) {
         const hotel = await hotelsService.getHotelByIdWihtRooms(userId, hotelId);
         return res.status(httpStatus.OK).send(hotel);
     } catch (e) {
+        if (e.name === "RequestError") {
+            return res.sendStatus(httpStatus.BAD_REQUEST);
+        }
         if (e.name === 'UnauthorizedError') {
             return res.sendStatus(httpStatus.UNAUTHORIZED);
         }
@@ -38,6 +41,6 @@ export async function getHotelById(req: AuthenticatedRequest, res: Response) {
         if (e.name === 'PaymentRequired') {
             return res.sendStatus(httpStatus.PAYMENT_REQUIRED);
         }
-        return res.sendStatus(httpStatus.BAD_REQUEST);
+        return res.sendStatus(httpStatus.INTERNAL_SERVER_ERROR);
     }
 }

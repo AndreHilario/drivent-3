@@ -9,5 +9,8 @@ export function createHotels() {
       createdAt: faker.date.recent(),
       updatedAt: faker.date.future(),
     },
+    include: {
+      Rooms: true,
+    },
   });
 }

@@ -1,9 +1,10 @@
 import { TicketStatus } from '@prisma/client';
-import { notFoundError } from '@/errors';
+import { notFoundError, requestError } from '@/errors';
 import { paymentRequired } from '@/errors/payment-required-error';
 import enrollmentRepository from '@/repositories/enrollment-repository';
 import hotelsRepository from '@/repositories/hotels-repository';
 import ticketsRepository from '@/repositories/tickets-repository';
+import httpStatus from 'http-status';
 
 async function getHotels(userId: number) {
     const enrollment = await enrollmentRepository.findWithAddressByUserId(userId);
@@ -13,6 +14,10 @@ async function getHotels(userId: number) {
     if (!result || result.length === 0 || result === null) throw notFoundError();
 
     const ticket = await ticketsRepository.findTicketByEnrollmentId(enrollment.id);
+    if (!ticket) {
+        throw notFoundError();
+    }
+
     if (
         ticket.status === TicketStatus.RESERVED ||
         ticket.TicketType.isRemote === true ||
@@ -20,14 +25,32 @@ async function getHotels(userId: number) {
     ) {
         throw paymentRequired();
     }
-    if (!ticket) throw notFoundError();
 
     return result;
 }
 
 async function getHotelByIdWihtRooms(userId: number, hotelId: number) {
 
+    if (!hotelId) throw requestError(httpStatus.BAD_REQUEST, "");
+
     const hotelWithRooms = await hotelsRepository.getHotelAndRoomsPrisma(hotelId);
+    if (!hotelWithRooms) throw notFoundError();
+
+    const enrollment = await enrollmentRepository.findWithAddressByUserId(userId);
+    if (!enrollment) throw notFoundError();
+
+    const result = await hotelsRepository.getAllHotelsPrisma();
+    if (!result || result.length === 0 || result === null) throw notFoundError();
+
+    const ticket = await ticketsRepository.findTicketByEnrollmentId(enrollment.id);
+    if (!ticket) throw notFoundError();
+    if (
+        ticket.status === TicketStatus.RESERVED ||
+        ticket.TicketType.isRemote === true ||
+        ticket.TicketType.includesHotel === false
+    ) {
+        throw paymentRequired();
+    }
 
     return {
         id: hotelWithRooms.id,
