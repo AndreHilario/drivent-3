@@ -56,7 +56,7 @@ describe('GET /hotels', () => {
     const token = jwt.sign({ userId: userWithoutSession.id }, process.env.JWT_SECRET);
     const response = await server.get('/hotels').set('Authorization', `Bearer ${token}`);
     expect(response.status).toBe(httpStatus.UNAUTHORIZED);
-});
+  });
 
   describe('when token is valid', () => {
     it('should respond with status 404 when user doesnt have an enrollment yet', async () => {
@@ -153,7 +153,7 @@ describe('GET /hotels/:hotelId', () => {
     const token = jwt.sign({ userId: userWithoutSession.id }, process.env.JWT_SECRET);
     const response = await server.get('/hotels').set('Authorization', `Bearer ${token}`);
     expect(response.status).toBe(httpStatus.UNAUTHORIZED);
-});
+  });
 
   describe('when token is valid', () => {
     it('should respond with status 404 if hotelId parameter is not provided', async () => {
@@ -239,16 +239,19 @@ describe('GET /hotels/:hotelId', () => {
             image: hotel.image,
             createdAt: hotel.createdAt.toISOString(),
             updatedAt: hotel.updatedAt.toISOString(),
-            Rooms: hotel.Rooms.length > 0 ? [
-              {
-                id: hotel.Rooms[0].id,
-                name: hotel.Rooms[0].name,
-                capacity: hotel.Rooms[0].capacity,
-                hotelId: hotel.id,
-                createdAt: hotel.Rooms[0].createdAt.toISOString(),
-                updatedAt: hotel.Rooms[0].updatedAt.toISOString(),
-              },
-            ] : [],
+            Rooms:
+              hotel.Rooms.length > 0
+                ? [
+                    {
+                      id: hotel.Rooms[0].id,
+                      name: hotel.Rooms[0].name,
+                      capacity: hotel.Rooms[0].capacity,
+                      hotelId: hotel.id,
+                      createdAt: hotel.Rooms[0].createdAt.toISOString(),
+                      updatedAt: hotel.Rooms[0].updatedAt.toISOString(),
+                    },
+                  ]
+                : [],
           }),
         );
       });
