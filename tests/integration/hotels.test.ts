@@ -37,6 +37,10 @@ const createUserAndGenerateToken = async () => {
   return { user, token };
 };
 
+const createNewTicket = async (enrollment: number, ticketType: number) => {
+  await createTicket(enrollment, ticketType, TicketStatus.PAID);
+};
+
 describe('GET /hotels', () => {
   const baseUrl = '/hotels';
 
@@ -76,7 +80,7 @@ describe('GET /hotels', () => {
       const { user, token } = await createUserAndGenerateToken();
       const enrollment = await createEnrollmentWithAddress(user);
       const ticketType = await createTicketTypeHotel();
-      await createTicket(enrollment.id, ticketType.id, TicketStatus.PAID);
+      await createNewTicket(enrollment.id, ticketType.id);
       const response = await server.get(baseUrl).set('Authorization', token);
       expect(response.status).toEqual(httpStatus.NOT_FOUND);
     });
@@ -95,7 +99,7 @@ describe('GET /hotels', () => {
       const { user, token } = await createUserAndGenerateToken();
       const enrollment = await createEnrollmentWithAddress(user);
       const ticketType = await createTicketTypeRemote();
-      await createTicket(enrollment.id, ticketType.id, TicketStatus.PAID);
+      await createNewTicket(enrollment.id, ticketType.id);
       await createHotels();
       const response = await server.get(baseUrl).set('Authorization', token);
       expect(response.status).toEqual(httpStatus.PAYMENT_REQUIRED);
@@ -105,7 +109,7 @@ describe('GET /hotels', () => {
       const { user, token } = await createUserAndGenerateToken();
       const enrollment = await createEnrollmentWithAddress(user);
       const ticketType = await createTicketTypeWithoutHotel();
-      await createTicket(enrollment.id, ticketType.id, TicketStatus.PAID);
+      await createNewTicket(enrollment.id, ticketType.id);
       await createHotels();
       const response = await server.get(baseUrl).set('Authorization', token);
       expect(response.status).toEqual(httpStatus.PAYMENT_REQUIRED);
@@ -115,7 +119,7 @@ describe('GET /hotels', () => {
       const { user, token } = await createUserAndGenerateToken();
       const enrollment = await createEnrollmentWithAddress(user);
       const ticketType = await createTicketTypeHotel();
-      await createTicket(enrollment.id, ticketType.id, TicketStatus.PAID);
+      await createNewTicket(enrollment.id, ticketType.id);
       const hotel = await createHotels();
       const response = await server.get(baseUrl).set('Authorization', token);
       expect(response.status).toEqual(httpStatus.OK);
@@ -188,7 +192,7 @@ describe('GET /hotels/:hotelId', () => {
         const { user, token } = await createUserAndGenerateToken();
         const enrollment = await createEnrollmentWithAddress(user);
         const ticketType = await createTicketType();
-        await createTicket(enrollment.id, ticketType.id, TicketStatus.PAID);
+        await createNewTicket(enrollment.id, ticketType.id);
         await createHotels();
         const response = await server.get(`${baseUrl}/999999`).set('Authorization', token);
         expect(response.status).toEqual(httpStatus.NOT_FOUND);
@@ -208,7 +212,7 @@ describe('GET /hotels/:hotelId', () => {
         const { user, token } = await createUserAndGenerateToken();
         const enrollment = await createEnrollmentWithAddress(user);
         const ticketType = await createTicketTypeRemote();
-        await createTicket(enrollment.id, ticketType.id, TicketStatus.PAID);
+        await createNewTicket(enrollment.id, ticketType.id);
         const hotel = await createHotels();
         const response = await server.get(`${baseUrl}/${hotel.id}`).set('Authorization', token);
         expect(response.status).toEqual(httpStatus.PAYMENT_REQUIRED);
@@ -218,7 +222,7 @@ describe('GET /hotels/:hotelId', () => {
         const { user, token } = await createUserAndGenerateToken();
         const enrollment = await createEnrollmentWithAddress(user);
         const ticketType = await createTicketTypeWithoutHotel();
-        await createTicket(enrollment.id, ticketType.id, TicketStatus.PAID);
+        await createNewTicket(enrollment.id, ticketType.id);
         const hotel = await createHotels();
         const response = await server.get(`${baseUrl}/${hotel.id}`).set('Authorization', token);
         expect(response.status).toEqual(httpStatus.PAYMENT_REQUIRED);
@@ -228,7 +232,7 @@ describe('GET /hotels/:hotelId', () => {
         const { user, token } = await createUserAndGenerateToken();
         const enrollment = await createEnrollmentWithAddress(user);
         const ticketType = await createTicketTypeHotel();
-        await createTicket(enrollment.id, ticketType.id, TicketStatus.PAID);
+        await createNewTicket(enrollment.id, ticketType.id);
         const hotel = await createHotels();
         const response = await server.get(`${baseUrl}/${hotel.id}`).set('Authorization', token);
         expect(response.status).toEqual(httpStatus.OK);
